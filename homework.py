@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PRACTICUM_TOKEN = os.getenv('practicum_token')
-TELEGRAM_TOKEN = os.getenv('telegram_token')
-TELEGRAM_CHAT_ID = os.getenv('telegram_chat_id')
+PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
+TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s, %(levelname)s, %(message)s')
