@@ -21,7 +21,7 @@ handler = tg_logger.setup(logger,
                           token=TELEGRAM_TOKEN, users=TELEGRAM_CHAT_ID)
 
 
-RETRY_TIME = 4
+RETRY_TIME = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
