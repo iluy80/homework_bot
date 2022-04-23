@@ -1,5 +1,6 @@
 import os
 import time
+import datetime
 import telegram
 import requests
 import logging
@@ -69,7 +70,7 @@ def check_response(response):
         raise TypeError('Ошибка, возвращаетс не словарь')
     if 'homeworks' not in response and 'status' not in \
             response['homeworks'][0]:
-        raise TypeError('Ошибка, ключей нет')
+        raise TypeError('Ошибка, ключей нет ')
     if isinstance(response['homeworks'], list):
         try:
             homeworks = response['homeworks']
@@ -98,27 +99,28 @@ def check_tokens():
 
 
 def main():
-    """Основная логика работы бота."""
-    bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time())
-    # current_timestamp = int(time.mktime((2022, 1, 29, 7, 27, 0, 2, 294, 0)))
-
+    """Описана основная логика работы программы."""
+    try:
+        bot = telegram.Bot(token=TELEGRAM_TOKEN)
+    except Exception as error:
+        logging.critical('Введен неправильный токен или токен отсутствует: '
+                         f'{error}'
+                         )
+    current_timestamp = int(time.time()) - 24 * 60 * 60 * 30
     while True:
         try:
-            response = get_api_answer(current_timestamp)
-            check_resp = check_response(response)
-            if check_resp:
-                status = parse_status(check_resp[0])
-                send_message(bot, status)
-            else:
-                logging.debug('Работы нет в проверке')
+            response = get_api_answer(current_timestamp - RETRY_TIME)
+            chk_response = check_response(response)
+            if len(chk_response) == 0:
+                send_message(bot, f"На время {datetime.datetime.utcfromtimestamp(current_timestamp-RETRY_TIME).strftime('%Y-%m-%d %H:%M:%S')} ничего нового нет")
+            for i in range(len(chk_response)):
+                sts = f"{parse_status(chk_response[i])} {datetime.datetime.utcfromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')}"
+                send_message(bot, sts)
             current_timestamp = response['current_date']
-            time.sleep(RETRY_TIME)
-
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
-            logging.critical(message)
             send_message(bot, message)
+            logging.critical(message)
         finally:
             time.sleep(RETRY_TIME)
 
